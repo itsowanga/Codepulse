@@ -8,6 +8,7 @@
     #include <chrono>
     #include <ctime>
     #include <csignal>
+    #include <vector>
 
    extern "C" {
     #include "sqlite3.h"
@@ -34,8 +35,115 @@
         }
         printf("\n");
         return 0;
-}
-    int main(void){
+    }
+
+    // Callback to store query results
+    static vector<vector<string>> queryResults;
+    static int queryCallback(void *data, int argc, char **argv, char **azColName) {
+        vector<string> row;
+        for(int i = 0; i < argc; i++) {
+            row.push_back(argv[i] ? argv[i] : "NULL");
+        }
+        queryResults.push_back(row);
+        return 0;
+    }
+
+    // Query total duration for a specific language today
+    float getTotalDurationForLanguage(sqlite3* db, const string& language, const string& date) {
+        string query = "SELECT SUM(duration_sec) FROM sessions WHERE language='" + language + 
+                       "' AND date(timestamp)='" + date + "';";
+        
+        queryResults.clear();
+        char *errMessage = 0;
+        
+        if(sqlite3_exec(db, query.c_str(), queryCallback, 0, &errMessage) != SQLITE_OK) {
+            cerr << "Query error: " << errMessage << endl;
+            sqlite3_free(errMessage);
+            return 0.0;
+        }
+        
+        if(queryResults.size() > 0 && queryResults[0].size() > 0) {
+            return stof(queryResults[0][0]);
+        }
+        return 0.0;
+    }
+
+    // Query top projects by language/file for a specific date
+    void getTopProjects(sqlite3* db, const string& date) {
+        string query = "SELECT file, language, SUM(duration_sec) as total FROM sessions " \
+                       "WHERE date(timestamp)='" + date + "' GROUP BY file, language ORDER BY total DESC;";
+        
+        queryResults.clear();
+        char *errMessage = 0;
+        
+        if(sqlite3_exec(db, query.c_str(), queryCallback, 0, &errMessage) != SQLITE_OK) {
+            cerr << "Query error: " << errMessage << endl;
+            sqlite3_free(errMessage);
+            return;
+        }
+        
+        cout << "\n=== Top Projects ===" << endl;
+        for(const auto& row : queryResults) {
+            if(row.size() >= 3) {
+                cout << row[0] << " (" << row[1] << "): " << stof(row[2]) << "s" << endl;
+            }
+        }
+    }
+
+    // Calculate focus streaks (consecutive 60s blocks)
+    int calculateFocusStreaks(sqlite3* db, const string& date) {
+        string query = "SELECT COUNT(*) FROM sessions WHERE date(timestamp)='" + date + "';";
+        
+        queryResults.clear();
+        char *errMessage = 0;
+        
+        if(sqlite3_exec(db, query.c_str(), queryCallback, 0, &errMessage) != SQLITE_OK) {
+            cerr << "Query error: " << errMessage << endl;
+            sqlite3_free(errMessage);
+            return 0;
+        }
+        
+        if(queryResults.size() > 0 && queryResults[0].size() > 0) {
+            return stoi(queryResults[0][0]);
+        }
+        return 0;
+    }
+
+    // Display daily stats
+    void displayDailyStats(sqlite3* db, const string& date) {
+        cout << "\n=== Productivity Stats for " << date << " ===" << endl;
+        
+        float cppDuration = getTotalDurationForLanguage(db, "C++", date);
+        cout << "\nHow much C++ today? " << cppDuration << " seconds (" << (cppDuration / 60.0) << " minutes)" << endl;
+        
+        getTopProjects(db, date);
+        
+        int focusStreaks = calculateFocusStreaks(db, date);
+        cout << "\nFocus Streaks: " << focusStreaks << " blocks of 60 seconds" << endl;
+    }
+    int main(int argc, char* argv[]){
+
+        // Handle stats command
+        if(argc > 1 && string(argv[1]) == "stats") {
+            sqlite3* data;
+            int file = sqlite3_open("activity.db", &data);
+            
+            if(file != SQLITE_OK){
+                cout << "File did not open." << endl;
+                return 1;
+            }
+            
+            // Get today's date or use provided date
+            time_t now = time(0);
+            tm* ltm = localtime(&now);
+            char dateBuffer[11];
+            strftime(dateBuffer, sizeof(dateBuffer), "%Y-%m-%d", ltm);
+            string date = (argc > 2) ? argv[2] : dateBuffer;
+            
+            displayDailyStats(data, date);
+            sqlite3_close(data);
+            return 0;
+        }
 
         HWND foreground = GetForegroundWindow();
         char *errMessage = 0;
