@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePulse Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-box h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .stat-box .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💻 CodePulse Dashboard</h1>
+            <p>Your coding activity at a glance</p>
+        </header>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h2>📊 Language Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="languageChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>⏱️ Focus Over Time</h2>
+                <div class="chart-container">
+                    <canvas id="focusChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card full-width">
+                <h2>📈 Summary Statistics</h2>
+                <div class="stats">
+                    <div class="stat-box">
+                        <h3>Total Focus Time Today</h3>
+                        <div class="value">28.2 min</div>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Languages Used</h3>
+                        <div class="value">5</div>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Top Language</h3>
+                        <div class="value">C++</div>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Average Daily Focus</h3>
+                        <div class="value">39 min</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Generated: 2025-12-11 12:19:26 | CodePulse Activity Tracker</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Language Distribution Chart
+        const languageCtx = document.getElementById('languageChart').getContext('2d');
+        new Chart(languageCtx, {
+            type: 'bar',
+            data: {
+                labels: ["C++", "SQL", "JavaScript", "CSS", "Python"],
+                datasets: [{
+                    label: 'Duration (minutes)',
+                    data: [7.716666666666667, 6.883333333333334, 5.666666666666667, 4.216666666666667, 3.7333333333333334],
+                    backgroundColor: [
+                        '#FF6B6B',
+                        '#4ECDC4',
+                        '#45B7D1',
+                        '#FFA07A',
+                        '#98D8C8',
+                        '#F7B731',
+                        '#5F27CD'
+                    ],
+                    borderColor: '#333',
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(0) + ' min';
+                            },
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Focus Over Time Chart
+        const focusCtx = document.getElementById('focusChart').getContext('2d');
+        new Chart(focusCtx, {
+            type: 'line',
+            data: {
+                labels: ["2025-12-04", "2025-12-05", "2025-12-06", "2025-12-07", "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11"],
+                datasets: [{
+                    label: 'Focus Time (minutes)',
+                    data: [28.216666666666665, 53.7, 41.766666666666666, 43.983333333333334, 47.11666666666667, 35.666666666666664, 36.95, 28.216666666666665],
+                    borderColor: '#45B7D1',
+                    backgroundColor: 'rgba(69, 183, 209, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    pointRadius: 6,
+                    pointBackgroundColor: '#45B7D1',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(0) + ' min';
+                            },
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

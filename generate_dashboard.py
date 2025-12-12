@@ -112,7 +112,7 @@ def generate_language_chart(conn, date):
     
     plt.tight_layout()
     plt.savefig('daily_chart.png', dpi=150, bbox_inches='tight')
-    print("✓ Generated daily_chart.png")
+    print("Generated daily_chart.png")
     return True
 
 # Generate HTML dashboard
@@ -419,21 +419,21 @@ def main():
         # Get today's date
         today = datetime.now().strftime('%Y-%m-%d')
         
-        print("🚀 CodePulse Dashboard Generator")
-        print(f"📅 Date: {today}\n")
+        print("CodePulse Dashboard Generator")
+        print(f"Date: {today}\n")
         
         # Generate charts
         if generate_language_chart(conn, today):
             generate_html_dashboard(conn, today)
-            print("\n✨ Dashboard generated successfully!")
-            print(f"📂 Files created: daily_chart.png, dashboard.html")
+            print("\nDashboard generated successfully!")
+            print(f"Files created: daily_chart.png, dashboard.html")
         else:
             print("No activity data to visualize")
         
         conn.close()
         
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
         import traceback
         traceback.print_exc()
 
