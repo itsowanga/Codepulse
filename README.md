@@ -6,12 +6,15 @@ CodePulse is a lightweight, offline-first C++ desktop app that monitors active c
 
 - ✅ **Real-time window tracking** - Detects active window and file extensions
 - ✅ **Local SQLite database** - No cloud required, 100% offline
-- ✅ **Flask REST API** - Three endpoints for real-time data
+- ✅ **Flask REST API** - Four endpoints for real-time data
 - ✅ **Live web dashboard** - Auto-updating Chart.js visualizations
 - ✅ **Language breakdown** - Track coding time by language
 - ✅ **Project analytics** - See which folders get the most attention
 - ✅ **Focus streaks** - Build and maintain coding momentum
 - ✅ **CORS enabled** - Easy frontend integration
+- ✅ **PDF Export** - Generate professional reports with charts and statistics
+- ✅ **Mobile responsive** - Works perfectly on phones and tablets
+- ✅ **Render.com ready** - Deploy to cloud in minutes
 
 ## 📋 Requirements
 
@@ -136,6 +139,20 @@ Health check - verify API is running.
 }
 ```
 
+### `GET /api/report/pdf`
+
+Download professional PDF report with charts and statistics.
+
+**Usage:**
+```bash
+curl -o activity_report.pdf http://localhost:5000/api/report/pdf
+```
+
+**Response:**
+- Binary PDF file
+- Contains: 7-day chart, language breakdown, projects, stats
+- Filename: `codepulse_report_<year>.pdf`
+
 ## 🖥️ Running the C++ Activity Monitor
 
 Compile and run the desktop monitor to start tracking:
@@ -162,10 +179,13 @@ codepulse/
 ├── main.cpp                  # C++ Activity Monitor
 ├── sqlite3.c/h              # SQLite Library
 ├── activity.db              # Activity Database (auto-created)
-├── api_server.py            # Flask API Server (NEW!)
+├── api_server.py            # Flask API Server with dashboard
+├── pdf_generator.py         # PDF report generator
 ├── generate_dashboard.py    # Static Dashboard Generator (legacy)
 ├── init_sample_data.py      # Sample Data Initializer
 ├── requirements.txt         # Python Dependencies
+├── Procfile                 # Render.com deployment
+├── render.yaml              # Render configuration
 ├── Makefile                 # Build Configuration
 └── README.md               # This file
 ```
@@ -282,7 +302,78 @@ open dashboard.html   # macOS
 xdg-open dashboard.html  # Linux
 ```
 
-## 🌐 Network Deployment
+## 📄 PDF Report Export
+
+Generate professional PDF reports of your coding activity:
+
+### Quick Export
+
+```bash
+python pdf_generator.py
+```
+
+Creates: `codepulse_report_YYYY.pdf`
+
+### Via REST API
+
+```bash
+curl http://localhost:5000/api/report/pdf > report.pdf
+```
+
+### PDF Report Contents
+
+- 📊 7-day activity chart
+- 💬 Language distribution
+- 📁 Top projects breakdown
+- 📈 Summary statistics
+- 📅 Daily metrics
+- 🎯 Key insights
+
+### Export Options
+
+**To file:**
+```bash
+python pdf_generator.py
+```
+
+**To specific path:**
+```python
+from pdf_generator import generate_report
+generate_report(output_path='my_reports/report_dec_28.pdf')
+```
+
+**With custom date range:**
+```python
+from datetime import datetime, timedelta
+from pdf_generator import generate_report
+
+start = datetime.now() - timedelta(days=30)
+generate_report(start_date=start, days=30)
+```
+
+### API Endpoint
+
+**GET `/api/report/pdf`**
+
+Returns PDF file directly, downloads to your device.
+
+```bash
+curl -o activity_report.pdf http://localhost:5000/api/report/pdf
+```
+
+Response:
+- Content-Type: `application/pdf`
+- File: Professional PDF with charts and data
+
+### Use Cases
+
+- 📋 Weekly/monthly reports for portfolio
+- 💼 Share progress with team/manager
+- 📊 Analyze coding patterns
+- 🎯 Track productivity goals
+- 📑 Archive activity history
+
+## 🌐 Deployment
 
 ### Local Network Access
 
@@ -296,6 +387,47 @@ if __name__ == '__main__':
 
 Then access from another machine: `http://<your-computer-ip>:5000`
 
+### Render.com Cloud Deployment
+
+Deploy to Render.com free tier in 5 minutes:
+
+#### Step 1: Connect Repository
+1. Go to https://render.com
+2. Sign up with GitHub
+3. Create "New Web Service"
+4. Select `itsowanga/Codepulse` repository
+
+#### Step 2: Configure Service
+
+| Setting | Value |
+|---------|-------|
+| Name | codepulse-api |
+| Environment | Python 3 |
+| Region | US East (or closest) |
+| Branch | main |
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | Leave blank (uses Procfile) |
+| Plan | Free |
+
+#### Step 3: Deploy
+- Click "Create Web Service"
+- Wait 2-3 minutes for build
+- Service goes live automatically
+
+#### Step 4: Access Dashboard
+Visit your assigned URL:
+```
+https://codepulse-ss.onrender.com
+```
+
+(Render assigns a unique URL)
+
+#### Test on Phone
+1. Open phone browser
+2. Visit Render URL
+3. See responsive dashboard
+4. Charts update live
+
 ### Production Deployment
 
 Use a production WSGI server:
@@ -304,6 +436,8 @@ Use a production WSGI server:
 pip install gunicorn
 gunicorn -w 4 -b 0.0.0.0:5000 api_server:app
 ```
+
+Or with Render.com Pro plan for persistent storage and custom domain.
 
 ## 💾 Database
 
@@ -387,10 +521,13 @@ app.run(debug=False, host='localhost', port=5000)  # Production
 
 ## 📄 Files
 
-- **api_server.py** - Flask REST API with integrated frontend
+- **api_server.py** - Flask REST API with integrated live dashboard
+- **pdf_generator.py** - PDF report generator with charts
 - **generate_dashboard.py** - Legacy static dashboard generator
 - **init_sample_data.py** - Generates 8 days of sample activity
 - **requirements.txt** - Python package dependencies
+- **Procfile** - Render.com deployment configuration
+- **render.yaml** - Render service configuration
 - **main.cpp** - C++ activity monitor
 - **Makefile** - Build configuration
 - **sqlite3.c/h** - SQLite3 library
