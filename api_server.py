@@ -8,7 +8,7 @@ import sqlite3
 import json
 from datetime import datetime, timedelta
 from collections import defaultdict, Counter
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_file
 from flask_cors import CORS
 import os
 
@@ -239,6 +239,43 @@ def health_check():
     except Exception as e:
         return jsonify({
             "status": "error",
+            "error": str(e)
+        }), 500
+
+# ============================================================================
+# PDF EXPORT ENDPOINT: /api/export/pdf
+# ============================================================================
+@app.route('/api/export/pdf', methods=['GET'])
+def export_pdf():
+    """Export activity report as PDF"""
+    try:
+        from pdf_generator import generate_pdf
+        
+        # Generate PDF
+        filename = 'codepulse_report_2025.pdf'
+        if generate_pdf(filename):
+            # Return the PDF file
+            from flask import send_file
+            file_path = os.path.join(os.path.dirname(__file__), filename)
+            return send_file(
+                file_path,
+                mimetype='application/pdf',
+                as_attachment=True,
+                download_name=filename
+            )
+        else:
+            return jsonify({
+                "success": False,
+                "error": "Failed to generate PDF"
+            }), 500
+    except ImportError:
+        return jsonify({
+            "success": False,
+            "error": "PDF generation requires reportlab. Install with: pip install reportlab"
+        }), 400
+    except Exception as e:
+        return jsonify({
+            "success": False,
             "error": str(e)
         }), 500
 
