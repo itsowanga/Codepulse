@@ -10,6 +10,9 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from collections import defaultdict
+from flask import Flask, render_template_string, jsonify
+
+app = Flask(__name__)
 
 # Connect to database
 def get_db_connection():
@@ -37,6 +40,7 @@ def get_language_distribution(conn, date):
     return result
 
 # Get focus data over time (last 7 days)
+@app.route('/stats', methods=['POST'])
 def get_focus_over_time(conn, days=7):
     cursor = conn.cursor()
     dates = []
@@ -56,8 +60,8 @@ def get_focus_over_time(conn, days=7):
         # Convert to minutes for better readability
         dates.append(date)
         focus_counts.append(total_duration / 60.0)  # in minutes
-    
-    return dates, focus_counts
+
+    return jsonify(dates=dates, focus_counts=focus_counts)
 
 # Generate bar chart for language distribution
 def generate_language_chart(conn, date):
@@ -410,7 +414,7 @@ def generate_html_dashboard(conn, date):
     
     with open('dashboard.html', 'w', encoding='utf-8') as f:
         f.write(html_content)
-    print("✓ Generated dashboard.html")
+    print("Generated dashboard.html")
 
 def main():
     try:

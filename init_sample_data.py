@@ -67,7 +67,7 @@ def init_sample_data():
     
     conn.commit()
     conn.close()
-    print("✓ Sample data initialized successfully!")
+    print("Sample data initialized successfully!")
 
 if __name__ == '__main__':
     init_sample_data()
