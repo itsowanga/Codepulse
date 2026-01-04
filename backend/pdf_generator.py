@@ -9,7 +9,7 @@ import json
 from datetime import datetime, timedelta
 from collections import Counter
 import os
-from config import get_db_path, DATA_DIR
+from backend.config import get_db_path, DATA_DIR
 
 try:
     from reportlab.lib.pagesizes import letter, A4

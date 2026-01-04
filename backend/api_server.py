@@ -11,7 +11,11 @@ from collections import defaultdict, Counter
 from flask import Flask, jsonify, send_file
 from flask_cors import CORS
 import os
-from config import get_db_path
+# Support both package imports (deployed) and local script runs (cd into backend)
+try:
+    from backend.config import get_db_path
+except ModuleNotFoundError:
+    from config import get_db_path
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend
@@ -250,6 +254,8 @@ def health_check():
 def export_pdf():
     """Export activity report as PDF"""
     try:
+        from backend.pdf_generator import generate_pdf
+    except ModuleNotFoundError:
         from pdf_generator import generate_pdf
         
         # Generate PDF
@@ -769,16 +775,29 @@ if __name__ == '__main__':
         print("Warning: data/activity.db not found!")
         print("Please run backend/init_sample_data.py first to create sample data")
     
-    print("Starting CodePulse Flask API Server...")
-    print("Dashboard: http://localhost:5000")
-    print("API Stats: http://localhost:5000/api/stats")
-    print("API Projects: http://localhost:5000/api/projects")
-    print("API Languages: http://localhost:5000/api/languages")
-    print("\nPress Ctrl+C to stop the server")
-    
-    # Determine environment
+    # Determine environment and host/port
     is_production = os.environ.get('RENDER') == 'true'
-    port = int(os.environ.get('PORT', 5000))
+    default_port = int(os.environ.get('PORT', 5000))
     debug = not is_production
-    
-    app.run(debug=debug, host='0.0.0.0', port=port)
+    # Bind to loopback for local runs to avoid Windows socket permission issues
+    host = '0.0.0.0' if is_production else '127.0.0.1'
+
+    # Try ports with fallback for common conflicts
+    candidate_ports = [default_port, 8000, 8080, 3000] if default_port == 5000 else [default_port, 5000, 8000, 8080, 3000]
+    for p in candidate_ports:
+        try:
+            print(f"Starting CodePulse Flask API Server on {host}:{p}...")
+            print(f"Dashboard: http://localhost:{p}")
+            print(f"API Stats: http://localhost:{p}/api/stats")
+            print(f"API Projects: http://localhost:{p}/api/projects")
+            print(f"API Languages: http://localhost:{p}/api/languages")
+            print("\nPress Ctrl+C to stop the server")
+            app.run(debug=debug, host=host, port=p)
+            break
+        except OSError as e:
+            # WinError 10013: Access denied; 10048: Address in use
+            if hasattr(e, 'winerror') and e.winerror in (10013, 10048):
+                print(f"Port {p} unavailable ({e}). Trying next port...")
+                continue
+            else:
+                raise

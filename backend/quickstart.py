@@ -8,7 +8,7 @@ import os
 import subprocess
 import sys
 import time
-from config import get_db_path
+from backend.config import get_db_path
 
 def run_command(cmd, description):
     """Run a shell command and report status"""

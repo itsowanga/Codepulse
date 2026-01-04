@@ -12,7 +12,7 @@ import matplotlib.dates as mdates
 from collections import defaultdict
 from flask import Flask, render_template_string, jsonify
 import os
-from config import get_db_path, DATA_DIR, FRONTEND_DIR
+from backend.config import get_db_path, DATA_DIR, FRONTEND_DIR
 
 app = Flask(__name__)
 
