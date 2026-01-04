@@ -1,4 +1,104 @@
-activity.db
-*.png
-debug_db.py
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual Environments
+.venv
+venv/
+ENV/
+env/
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Build
+*.o
+*.a
+*.so
+*.exe
+*.dll
+*.dylib
+build/
+dist/
+
+# C++ Build
+*.out
+*.app
+*.elf
+
+# SQLite
+*.db
+*.db-journal
+
+# Reports and Generated Files
 *.pdf
+*.png
+*.jpg
+*.jpeg
+*.csv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary Files
+*.tmp
+*.bak
+*~
+.~*
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Render.com
+.render
+
+# Node (if adding frontend dependencies)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# IDE specific
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json

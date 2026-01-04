@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  codepulse-api:
+    build: .
+    container_name: codepulse-api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./backend:/app/backend
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=backend/api_server.py
+    command: flask run --host=0.0.0.0
+    restart: unless-stopped
+    networks:
+      - codepulse-network
+
+networks:
+  codepulse-network:
+    driver: bridge
