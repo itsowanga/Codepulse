@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 import time
+from config import get_db_path
 
 def run_command(cmd, description):
     """Run a shell command and report status"""
@@ -30,12 +31,13 @@ def main():
     print("🚀 CodePulse - Live Dashboard Setup")
     print("=" * 60)
     
-    # Check if activity.db exists
-    if not os.path.exists('activity.db'):
+    # Check if data/activity.db exists
+    db_path = get_db_path()
+    if not os.path.exists(db_path):
         print("\n⚠️  Database not found! Initializing sample data...")
-        run_command('python init_sample_data.py', 'Initialize sample data')
+        run_command('python backend/init_sample_data.py', 'Initialize sample data')
     else:
-        print(f"✅ Database found ({os.path.getsize('activity.db')} bytes)")
+        print(f"✅ Database found ({os.path.getsize(db_path)} bytes)")
     
     # Check Flask
     print("\n📦 Checking dependencies...")
@@ -53,9 +55,9 @@ def main():
     
     print("""
 To start the dashboard:
-  1. Run: python api_server.py
-  2. Open: http://localhost:5000
-  3. Charts update every 30 seconds
+    1. Run: python backend/api_server.py
+    2. Open: http://localhost:5000
+    3. Charts update every 30 seconds
 
 API Endpoints:
   GET /api/stats       - Last 7 days activity
@@ -70,8 +72,8 @@ Tips:
   - Browser back button won't work (single page app)
   
 Troubleshooting:
-  - Port 5000 in use? Use: python -c "from api_server import app; app.run(port=8000)"
-  - No data? Run: python init_sample_data.py
+    - Port 5000 in use? Use: python -c "from backend.api_server import app; app.run(port=8000)"
+    - No data? Run: python backend/init_sample_data.py
   - Check: http://localhost:5000/api/health
     """)
 

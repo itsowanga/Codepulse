@@ -9,6 +9,7 @@ import json
 from datetime import datetime, timedelta
 from collections import Counter
 import os
+from config import get_db_path, DATA_DIR
 
 try:
     from reportlab.lib.pagesizes import letter, A4
@@ -23,7 +24,7 @@ except ImportError:
 
 def get_db_connection():
     """Create a database connection"""
-    db_path = os.path.join(os.path.dirname(__file__), 'activity.db')
+    db_path = get_db_path()
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
@@ -167,11 +168,12 @@ def generate_pdf(filename='codepulse_report_2025.pdf'):
         languages = get_language_distribution()
         projects = get_top_projects()
         
-        # Create PDF
-        pdf_path = os.path.join(os.path.dirname(__file__), filename)
+        # Create PDF in data/ directory
+        os.makedirs(str(DATA_DIR), exist_ok=True)
+        pdf_path = os.path.join(str(DATA_DIR), filename)
         doc = SimpleDocTemplate(pdf_path, pagesize=letter,
-                              rightMargin=72, leftMargin=72,
-                              topMargin=72, bottomMargin=18)
+                                 rightMargin=72, leftMargin=72,
+                                 topMargin=72, bottomMargin=18)
         
         # Container for PDF elements
         elements = []

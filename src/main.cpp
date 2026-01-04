@@ -9,10 +9,13 @@
     #include <ctime>
     #include <csignal>
     #include <vector>
+    #include <filesystem>
 
    extern "C" {
     #include "sqlite3.h"
 }
+
+    namespace fs = std::filesystem;
 
     using namespace std;
 
@@ -123,10 +126,24 @@
     }
     int main(int argc, char* argv[]){
 
+        // Database path: ../data/activity.db relative to executable location
+        std::string dbDir = "../data";
+        std::string dbPath = dbDir + "/activity.db";
+        
+        // Create data directory if it doesn't exist
+        try {
+            if (!fs::exists(dbDir)) {
+                fs::create_directories(dbDir);
+            }
+        } catch (const fs::filesystem_error& e) {
+            cerr << "Error creating data directory: " << e.what() << endl;
+            return 1;
+        }
+
         // Handle stats command
         if(argc > 1 && string(argv[1]) == "stats") {
             sqlite3* data;
-            int file = sqlite3_open("activity.db", &data);
+            int file = sqlite3_open(dbPath.c_str(), &data);
             
             if(file != SQLITE_OK){
                 cout << "File did not open." << endl;
@@ -161,7 +178,7 @@
         signal(SIGTERM, signalHandler);
 
         //Attempt to open file and error handling when unable to open
-        file = sqlite3_open("activity.db", &data);
+        file = sqlite3_open(dbPath.c_str(), &data);
         
         // Store database pointer globally for signal handler access
         globalDb = data;

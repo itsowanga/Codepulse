@@ -10,7 +10,7 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# Copy project structure
 COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 COPY data/ ./data/
@@ -21,10 +21,14 @@ EXPOSE 5000
 # Set environment variables
 ENV FLASK_APP=backend/api_server.py
 ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
+
+# Create data directory
+RUN mkdir -p /app/data
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5000/api/activity')"
+    CMD python -c "import requests; requests.get('http://localhost:5000/api/activity')" || exit 1
 
 # Run the Flask app with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "backend.api_server:app"]
+CMD ["sh", "-c", "cd /app/backend && gunicorn --bind 0.0.0.0:5000 --workers 4 api_server:app"]

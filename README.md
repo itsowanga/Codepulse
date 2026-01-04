@@ -41,13 +41,13 @@ pip install flask flask-cors requests matplotlib
 To test with sample data (skip if you already have activity from the C++ monitor):
 
 ```bash
-python init_sample_data.py
+python backend/init_sample_data.py
 ```
 
 ### 3. Start the API Server
 
 ```bash
-python api_server.py
+python backend/api_server.py
 ```
 
 You'll see:
@@ -159,35 +159,57 @@ Compile and run the desktop monitor to start tracking:
 
 ### Option 1: Using Makefile
 ```bash
-make run
+cd src
+make && ../build/activity_monitor
 ```
 
 ### Option 2: Manual Compilation
 ```bash
-gcc -Wall -Wextra -c sqlite3.c -o sqlite3.o
-g++ -std=c++11 -Wall -Wextra -c main.cpp -o main.o
-g++ -o sqlite_app main.o sqlite3.o
-./sqlite_app
+cd src
+g++ -std=c++17 -Wall -Wextra -O2 main.cpp sqlite3.c -o ../build/activity_monitor
+../build/activity_monitor
 ```
 
-The monitor will automatically log your activity to `activity.db`.
+The monitor will automatically log your activity to `data/activity.db`.
 
 ## 📁 Project Structure
 
 ```
 codepulse/
-├── main.cpp                  # C++ Activity Monitor
-├── sqlite3.c/h              # SQLite Library
-├── activity.db              # Activity Database (auto-created)
-├── api_server.py            # Flask API Server with dashboard
-├── pdf_generator.py         # PDF report generator
-├── generate_dashboard.py    # Static Dashboard Generator (legacy)
-├── init_sample_data.py      # Sample Data Initializer
-├── requirements.txt         # Python Dependencies
-├── Procfile                 # Render.com deployment
-├── render.yaml              # Render configuration
-├── Makefile                 # Build Configuration
-└── README.md               # This file
+├── src/                    # C++ activity monitor
+│   ├── main.cpp           # Main application
+│   ├── sqlite3.c          # SQLite source
+│   ├── sqlite3.h          # SQLite header
+│   └── Makefile           # Build configuration
+│
+├── backend/               # Python Flask API & utilities
+│   ├── api_server.py      # REST API server
+│   ├── generate_dashboard.py  # Dashboard generation
+│   ├── pdf_generator.py   # PDF export
+│   ├── init_sample_data.py    # Test data
+│   └── quickstart.py      # Quick utilities
+│
+├── frontend/              # Web dashboard
+│   └── dashboard.html     # Single-page app
+│
+├── data/                  # Generated data and reports
+│   ├── activity.db        # SQLite database
+│   ├── daily_chart.png    # Generated chart
+│   └── codepulse_report_*.pdf  # Exported reports
+│
+├── docs/                  # Documentation
+│   ├── ARCHITECTURE.md    # System design
+│   └── INSTALLATION.md    # Detailed setup
+│
+├── .github/               # Issue/PR templates
+├── Dockerfile             # Container build
+├── docker-compose.yml     # Local dev compose
+├── requirements.txt       # Python dependencies
+├── Procfile               # Render deployment
+├── render.yaml            # Render config
+├── LICENSE                # MIT license
+├── CONTRIBUTING.md        # Contribution guidelines
+└── README.md              # Project overview (this file)
 ```
 
 ## 🎨 Dashboard Features

@@ -11,6 +11,7 @@ from collections import defaultdict, Counter
 from flask import Flask, jsonify, send_file
 from flask_cors import CORS
 import os
+from config import get_db_path
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend
@@ -18,7 +19,7 @@ CORS(app)  # Enable CORS for frontend
 # Database connection
 def get_db_connection():
     """Create a database connection"""
-    db_path = os.path.join(os.path.dirname(__file__), 'activity.db')
+    db_path = get_db_path()
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
@@ -256,7 +257,8 @@ def export_pdf():
         if generate_pdf(filename):
             # Return the PDF file
             from flask import send_file
-            file_path = os.path.join(os.path.dirname(__file__), filename)
+            # Serve PDF from data/ directory
+            file_path = os.path.join(os.path.dirname(__file__), '..', 'data', filename)
             return send_file(
                 file_path,
                 mimetype='application/pdf',
@@ -761,10 +763,11 @@ def index():
     """
 
 if __name__ == '__main__':
-    # Check if activity.db exists
-    if not os.path.exists('activity.db'):
-        print("Warning: activity.db not found!")
-        print("Please run init_sample_data.py first to create sample data")
+    # Check if activity.db exists in data/
+    db_exists = os.path.exists(get_db_path())
+    if not db_exists:
+        print("Warning: data/activity.db not found!")
+        print("Please run backend/init_sample_data.py first to create sample data")
     
     print("Starting CodePulse Flask API Server...")
     print("Dashboard: http://localhost:5000")

@@ -11,12 +11,15 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from collections import defaultdict
 from flask import Flask, render_template_string, jsonify
+import os
+from config import get_db_path, DATA_DIR, FRONTEND_DIR
 
 app = Flask(__name__)
 
 # Connect to database
 def get_db_connection():
-    conn = sqlite3.connect('activity.db')
+    # Centralized database path
+    conn = sqlite3.connect(get_db_path())
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -115,7 +118,9 @@ def generate_language_chart(conn, date):
         ax2.text(i, duration + 2, f'{duration:.0f}m', ha='center', va='bottom', fontsize=9)
     
     plt.tight_layout()
-    plt.savefig('daily_chart.png', dpi=150, bbox_inches='tight')
+    # Save chart to data/ directory
+    os.makedirs(str(DATA_DIR), exist_ok=True)
+    plt.savefig(os.path.join(str(DATA_DIR), 'daily_chart.png'), dpi=150, bbox_inches='tight')
     print("Generated daily_chart.png")
     return True
 
@@ -412,7 +417,9 @@ def generate_html_dashboard(conn, date):
 </html>
 """
     
-    with open('dashboard.html', 'w', encoding='utf-8') as f:
+    # Write dashboard to frontend/ directory
+    os.makedirs(str(FRONTEND_DIR), exist_ok=True)
+    with open(os.path.join(str(FRONTEND_DIR), 'dashboard.html'), 'w', encoding='utf-8') as f:
         f.write(html_content)
     print("Generated dashboard.html")
 

@@ -6,10 +6,16 @@ Initialize sample data in activity.db for testing the dashboard
 import sqlite3
 from datetime import datetime, timedelta
 import random
+import os
 
 def init_sample_data():
     """Create sample activity data for the last 7 days"""
-    conn = sqlite3.connect('activity.db')
+    # Database is in data/ directory at project root
+    db_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+    os.makedirs(db_dir, exist_ok=True)
+    db_path = os.path.join(db_dir, 'activity.db')
+    
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
     # Create table if it doesn't exist
