@@ -4,6 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 -b 0.0.0.0:$PORT backend.api_server:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
