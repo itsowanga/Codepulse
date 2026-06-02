@@ -177,7 +177,7 @@
         signal(SIGINT, signalHandler);
         signal(SIGTERM, signalHandler);
 
-        //Attempt to open file and error handling when unable to open
+        // Open SQLite database
         file = sqlite3_open(dbPath.c_str(), &data);
         
         // Store database pointer globally for signal handler access
@@ -189,21 +189,21 @@
         }
 
        else{
-        // Create a sql table for logging
+        // Create sessions table if missing
         sqlCreateTable = "CREATE TABLE sessions("\
         "timestamp TEXT,"\
         "file TEXT,"\
         "language TEXT,"\
         "duration_sec FLOAT);";
 
-        // Execution of the sql statement
+        // Run CREATE TABLE
         if(sqlite3_exec(data, sqlCreateTable, callback, 0, &errMessage) != SQLITE_OK) {
             cerr << "SQL error: " << errMessage << endl;
             sqlite3_free(errMessage);
         }
         clock_t before = clock();
         while(foreground != NULL){
-            // Store the foreground process information
+            // Read active window title
             wchar_t processName[256];
             GetWindowText(foreground, processName, 256);
             
@@ -211,7 +211,7 @@
             char buffer[256];
             wcstombs(buffer, processName, sizeof(buffer));
             string process = buffer;
-            // Slice the string to find filename + language using the file extension.
+            // Parse filename and extension from window title
             string filename = process.substr(0, process.find("-")-1);
             string language = filename.substr(filename.find("."), filename.size()-1);
             duration = clock() - before;

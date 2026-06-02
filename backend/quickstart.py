@@ -48,7 +48,7 @@ def main():
         print("❌ Flask not installed. Installing...")
         run_command('pip install flask flask-cors', 'Install Flask & CORS')
     
-    # Summary
+    # Done
     print("\n" + "=" * 60)
     print("📊 SETUP COMPLETE!")
     print("=" * 60)

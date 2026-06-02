@@ -83,4 +83,4 @@ Feel free to open a discussion or reach out on GitHub Issues.
 
 ---
 
-Thank you for contributing to CodePulse! 🚀
+Thank you for contributing to CodePulse.

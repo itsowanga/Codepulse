@@ -194,4 +194,4 @@ rm -rf ~/path/to/codepulse
 
 ---
 
-**Happy monitoring!** 🚀
+For additional setup details, see `docs/ARCHITECTURE.md`.

@@ -175,7 +175,7 @@ def generate_pdf(filename='codepulse_report_2025.pdf'):
                                  rightMargin=72, leftMargin=72,
                                  topMargin=72, bottomMargin=18)
         
-        # Container for PDF elements
+        # PDF element list
         elements = []
         
         # Define styles

@@ -11,16 +11,16 @@ from collections import defaultdict, Counter
 from flask import Flask, jsonify, send_file
 from flask_cors import CORS
 import os
-# Support both package imports (deployed) and local script runs (cd into backend)
+# Package import when deployed; local import when run from backend/
 try:
     from backend.config import get_db_path
 except ModuleNotFoundError:
     from config import get_db_path
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend
+CORS(app)
 
-# Database connection
+# Database
 def get_db_connection():
     """Create a database connection"""
     db_path = get_db_path()
@@ -28,9 +28,6 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-# ============================================================================
-# API ENDPOINT 1: /api/stats - Last 7 days of statistics
-# ============================================================================
 @app.route('/api/stats', methods=['GET'])
 def api_stats():
     """
@@ -113,9 +110,6 @@ def api_stats():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
-# ============================================================================
-# API ENDPOINT 2: /api/projects - Top project folders
-# ============================================================================
 @app.route('/api/projects', methods=['GET'])
 def api_projects():
     """
@@ -173,9 +167,6 @@ def api_projects():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
-# ============================================================================
-# API ENDPOINT 3: /api/languages - Language distribution (today)
-# ============================================================================
 @app.route('/api/languages', methods=['GET'])
 def api_languages():
     """
@@ -223,9 +214,6 @@ def api_languages():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
-# ============================================================================
-# Health check endpoint
-# ============================================================================
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Simple health check endpoint"""
@@ -247,9 +235,6 @@ def health_check():
             "error": str(e)
         }), 500
 
-# ============================================================================
-# PDF EXPORT ENDPOINT: /api/export/pdf
-# ============================================================================
 @app.route('/api/export/pdf', methods=['GET'])
 def export_pdf():
     """Export activity report as PDF"""
@@ -287,9 +272,6 @@ def export_pdf():
             "error": str(e)
         }), 500
 
-# ============================================================================
-# Serve dashboard frontend
-# ============================================================================
 @app.route('/', methods=['GET'])
 def index():
     """Serve the main dashboard"""
@@ -779,10 +761,12 @@ if __name__ == '__main__':
     is_production = os.environ.get('RENDER') == 'true'
     default_port = int(os.environ.get('PORT', 5000))
     debug = not is_production
-    # Bind to loopback for local runs to avoid Windows socket permission issues
+    # Disable reloader on Windows so port fallback works reliably.
+    use_reloader = debug and os.name != 'nt'
+    # Use loopback locally; bind all interfaces in production.
     host = '0.0.0.0' if is_production else '127.0.0.1'
 
-    # Try ports with fallback for common conflicts
+    # Fall back to alternate ports if the default port is unavailable.
     candidate_ports = [default_port, 8000, 8080, 3000] if default_port == 5000 else [default_port, 5000, 8000, 8080, 3000]
     for p in candidate_ports:
         try:
@@ -792,10 +776,10 @@ if __name__ == '__main__':
             print(f"API Projects: http://localhost:{p}/api/projects")
             print(f"API Languages: http://localhost:{p}/api/languages")
             print("\nPress Ctrl+C to stop the server")
-            app.run(debug=debug, host=host, port=p)
+            app.run(debug=debug, host=host, port=p, use_reloader=use_reloader)
             break
         except OSError as e:
-            # WinError 10013: Access denied; 10048: Address in use
+            # Windows: 10013 access denied, 10048 address in use
             if hasattr(e, 'winerror') and e.winerror in (10013, 10048):
                 print(f"Port {p} unavailable ({e}). Trying next port...")
                 continue

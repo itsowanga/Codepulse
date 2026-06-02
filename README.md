@@ -1,56 +1,57 @@
 # CodePulse - Live Activity Dashboard
 
-CodePulse is a lightweight, offline-first C++ desktop app that monitors active coding time in any editor (VS Code, PyCharm, etc.), logs language usage, project folders, and focus streaks, and generates a real-time web dashboard — all without internet. Now featuring a **live Flask API** with auto-updating charts!
+CodePulse is an offline-first desktop application that tracks active coding time in editors (VS Code, PyCharm, and others), logs language usage, project folders, and focus streaks, and serves a local web dashboard. A Flask REST API provides live chart updates without requiring an internet connection for core monitoring.
 
-## ✨ Features
+## Features
 
-- ✅ **Real-time window tracking** - Detects active window and file extensions
-- ✅ **Local SQLite database** - No cloud required, 100% offline
-- ✅ **Flask REST API** - Four endpoints for real-time data
-- ✅ **Live web dashboard** - Auto-updating Chart.js visualizations
-- ✅ **Language breakdown** - Track coding time by language
-- ✅ **Project analytics** - See which folders get the most attention
-- ✅ **Focus streaks** - Build and maintain coding momentum
-- ✅ **CORS enabled** - Easy frontend integration
-- ✅ **PDF Export** - Generate professional reports with charts and statistics
-- ✅ **Mobile responsive** - Works perfectly on phones and tablets
-- ✅ **Render.com ready** - Deploy to cloud in minutes
+- Real-time window tracking (active window and file extensions)
+- Local SQLite database (no cloud dependency)
+- Flask REST API with endpoints for statistics, projects, and languages
+- Web dashboard with Chart.js visualizations (30-second refresh)
+- Language and project analytics
+- Focus streak tracking
+- CORS enabled for local frontend integration
+- PDF export for reports
+- Responsive layout for mobile and desktop
+- Optional deployment to Render.com
 
-## 📋 Requirements
+## Requirements
 
-- **C++ 17+** for the activity monitor
-- **SQLite 3** (included)
-- **Python 3.7+** for dashboard API
-- **Flask & Flask-CORS** (auto-installed)
+- C++17 or later (activity monitor)
+- SQLite 3 (bundled in `src/`)
+- Python 3.7 or later (API and dashboard)
+- Flask and Flask-CORS (see `requirements.txt`)
 
-## 🚀 Quick Start
+## Quick Start
 
-### 1. Install Python Dependencies
+### 1. Install Python dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Or manually:
+Or install manually:
+
 ```bash
 pip install flask flask-cors requests matplotlib
 ```
 
-### 2. Initialize Sample Data (Optional)
+### 2. Initialize sample data (optional)
 
-To test with sample data (skip if you already have activity from the C++ monitor):
+Use this step to test the dashboard without running the C++ monitor:
 
 ```bash
 python backend/init_sample_data.py
 ```
 
-### 3. Start the API Server
+### 3. Start the API server
 
 ```bash
 python backend/api_server.py
 ```
 
-You'll see:
+Example output:
+
 ```
 Starting CodePulse Flask API Server...
 Dashboard: http://localhost:5000
@@ -61,30 +62,32 @@ API Languages: http://localhost:5000/api/languages
  * Running on http://localhost:5000
 ```
 
-### 4. Open Your Browser
+### 4. Open the dashboard
 
-Visit **`http://localhost:5000`** to view your live dashboard!
+Open `http://localhost:5000` in a browser.
 
-The dashboard auto-updates every 30 seconds with:
-- 📊 **Last 7 Days Activity** (line chart)
-- 💬 **Today's Language Breakdown** (doughnut chart)
-- 📁 **Top Projects** (ranked list)
-- 📈 **Summary Statistics**
+The dashboard refreshes every 30 seconds and shows:
 
-## 🔌 REST API Endpoints
+- Last 7 days of activity (line chart)
+- Today's language breakdown (doughnut chart)
+- Top projects (ranked list)
+- Summary statistics
 
-All endpoints return JSON and support CORS.
+## REST API Endpoints
+
+All endpoints return JSON. CORS is enabled for local development.
 
 ### `GET /api/stats`
 
-Last 7 days of activity data.
+Activity for the last 7 days.
 
 **Response:**
+
 ```json
 {
   "success": true,
-  "labels": ["2025-12-21", "2025-12-22", ...],
-  "data": [49.07, 40.9, ...],
+  "labels": ["2025-12-21", "2025-12-22", "..."],
+  "data": [49.07, 40.9, "..."],
   "summary": {
     "total_minutes": 312.88,
     "total_sessions": 115,
@@ -96,9 +99,10 @@ Last 7 days of activity data.
 
 ### `GET /api/languages`
 
-Today's language distribution.
+Language distribution for today.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -112,6 +116,7 @@ Today's language distribution.
 Top 10 project folders by activity.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -128,9 +133,10 @@ Top 10 project folders by activity.
 
 ### `GET /api/health`
 
-Health check - verify API is running.
+Health check for the API and database connection.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -141,111 +147,86 @@ Health check - verify API is running.
 
 ### `GET /api/report/pdf`
 
-Download professional PDF report with charts and statistics.
+Download a PDF report with charts and statistics.
 
 **Usage:**
+
 ```bash
 curl -o activity_report.pdf http://localhost:5000/api/report/pdf
 ```
 
-**Response:**
-- Binary PDF file
-- Contains: 7-day chart, language breakdown, projects, stats
-- Filename: `codepulse_report_<year>.pdf`
+**Response:** Binary PDF (`codepulse_report_<year>.pdf`) with 7-day activity, languages, projects, and summary stats.
 
-## 🖥️ Running the C++ Activity Monitor
+## C++ Activity Monitor
 
-Compile and run the desktop monitor to start tracking:
+Build and run the monitor to record activity into `data/activity.db`.
 
-### Option 1: Using Makefile
+### Option 1: Makefile
+
 ```bash
 cd src
 make && ../build/activity_monitor
 ```
 
-### Option 2: Manual Compilation
+### Option 2: Manual build
+
 ```bash
 cd src
 g++ -std=c++17 -Wall -Wextra -O2 main.cpp sqlite3.c -o ../build/activity_monitor
 ../build/activity_monitor
 ```
 
-The monitor will automatically log your activity to `data/activity.db`.
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 codepulse/
 ├── src/                    # C++ activity monitor
-│   ├── main.cpp           # Main application
-│   ├── sqlite3.c          # SQLite source
-│   ├── sqlite3.h          # SQLite header
-│   └── Makefile           # Build configuration
-│
-├── backend/               # Python Flask API & utilities
-│   ├── api_server.py      # REST API server
-│   ├── generate_dashboard.py  # Dashboard generation
-│   ├── pdf_generator.py   # PDF export
-│   ├── init_sample_data.py    # Test data
-│   └── quickstart.py      # Quick utilities
-│
-├── frontend/              # Web dashboard
-│   └── dashboard.html     # Single-page app
-│
-├── data/                  # Generated data and reports
-│   ├── activity.db        # SQLite database
-│   ├── daily_chart.png    # Generated chart
-│   └── codepulse_report_*.pdf  # Exported reports
-│
-├── docs/                  # Documentation
-│   ├── ARCHITECTURE.md    # System design
-│   └── INSTALLATION.md    # Detailed setup
-│
-├── .github/               # Issue/PR templates
-├── Dockerfile             # Container build
-├── docker-compose.yml     # Local dev compose
-├── requirements.txt       # Python dependencies
-├── Procfile               # Render deployment
-├── render.yaml            # Render config
-├── LICENSE                # MIT license
-├── CONTRIBUTING.md        # Contribution guidelines
-└── README.md              # Project overview (this file)
+│   ├── main.cpp
+│   ├── sqlite3.c
+│   ├── sqlite3.h
+│   └── Makefile
+├── backend/                # Flask API and utilities
+│   ├── api_server.py
+│   ├── generate_dashboard.py
+│   ├── pdf_generator.py
+│   ├── init_sample_data.py
+│   └── quickstart.py
+├── frontend/
+│   └── dashboard.html
+├── data/
+│   ├── activity.db
+│   ├── daily_chart.png
+│   └── codepulse_report_*.pdf
+├── docs/
+│   ├── ARCHITECTURE.md
+│   └── INSTALLATION.md
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+├── Procfile
+├── render.yaml
+├── LICENSE
+├── CONTRIBUTING.md
+└── README.md
 ```
 
-## 🎨 Dashboard Features
+## Dashboard Behavior
 
-### Live Auto-Updating
+- Charts refresh every 30 seconds
+- Connection indicator: green when the API is reachable, red when offline
+- Automatic retry on network errors
+- Layout adapts to desktop, tablet, and mobile viewports
 
-- Charts refresh every 30 seconds automatically
-- Connection indicator: **Green** = connected, **Red** = offline
-- Automatic reconnection on network failure
-- Smooth animations and transitions
+**Visualizations:**
 
-### Responsive Design
+1. **Activity timeline** — 7-day focus time (line chart)
+2. **Language distribution** — today's breakdown (doughnut chart)
+3. **Project summary** — top folders with duration and session counts
 
-- Works on desktop, tablet, and mobile
-- Adapts to different screen sizes
-- Touch-friendly on mobile devices
+## Testing the API
 
-### Three Visualization Types
+### Python
 
-1. **Activity Timeline (Line Chart)**
-   - 7-day focus time trends
-   - Interactive data points
-   - Duration labels
-
-2. **Language Distribution (Doughnut Chart)**
-   - Today's breakdown by programming language
-   - Color-coded for easy identification
-
-3. **Project Summary (List)**
-   - Top folders ranked by activity
-   - Language tags and duration
-   - Session count
-
-## 🧪 Testing the API
-
-### Using Python
 ```python
 import requests
 response = requests.get('http://localhost:5000/api/stats')
@@ -253,7 +234,8 @@ data = response.json()
 print(data['summary']['total_minutes'])
 ```
 
-### Using curl
+### curl
+
 ```bash
 curl http://localhost:5000/api/stats
 curl http://localhost:5000/api/languages
@@ -261,110 +243,84 @@ curl http://localhost:5000/api/projects
 curl http://localhost:5000/api/health
 ```
 
-### From Browser
-Simply visit any endpoint URL:
-- `http://localhost:5000/api/stats`
-- `http://localhost:5000/api/languages`
-- `http://localhost:5000/api/projects`
+### Browser
 
-## 🚨 Troubleshooting
+Open any endpoint URL directly, for example `http://localhost:5000/api/stats`.
 
-### Port 5000 Already in Use
+## Troubleshooting
+
+### Port 5000 in use
 
 ```bash
-# Use a different port
 python -c "from api_server import app; app.run(port=8000)"
 ```
 
-Then access at `http://localhost:8000`
+Then use `http://localhost:8000`.
 
-### No Data Showing
+### No data on the dashboard
 
-1. Verify `activity.db` exists in the project directory
-2. Initialize sample data: `python init_sample_data.py`
-3. Or run the C++ monitor to generate real data
-4. Check health endpoint: `http://localhost:5000/api/health`
+1. Confirm `data/activity.db` exists
+2. Run `python backend/init_sample_data.py`, or run the C++ monitor
+3. Check `http://localhost:5000/api/health`
 
-### Flask Not Installed
+### Flask not installed
 
 ```bash
 pip install flask flask-cors
 ```
 
-### CORS Errors
+### CORS errors
 
-CORS is enabled by default in `api_server.py`. If you still see errors:
-- Clear browser cache (Ctrl+Shift+Delete)
-- Check browser console (F12) for detailed errors
-- Verify API endpoints return data directly
+CORS is enabled in `api_server.py`. If errors persist, clear the browser cache, inspect the browser console (F12), and verify endpoints return JSON when opened directly.
 
-### Charts Not Loading
+### Charts not loading
 
-- Open browser console (F12) and check for JavaScript errors
-- Verify Chart.js CDN is accessible
-- Check that API endpoints return valid JSON
-- Ensure JavaScript is enabled
+Check the browser console (F12), confirm Chart.js loads from the CDN, and verify API responses are valid JSON.
 
-## 📊 Legacy Dashboard
-
-The original static dashboard is still available:
+## Legacy Static Dashboard
 
 ```bash
-python generate_dashboard.py
+python backend/generate_dashboard.py
 ```
 
-This creates:
-- `daily_chart.png` - Matplotlib visualization
-- `dashboard.html` - Static HTML with embedded charts
-
-View with:
-```bash
-start dashboard.html  # Windows
-open dashboard.html   # macOS
-xdg-open dashboard.html  # Linux
-```
-
-## 📄 PDF Report Export
-
-Generate professional PDF reports of your coding activity:
-
-### Quick Export
+This generates `data/daily_chart.png` and `frontend/dashboard.html`. Open the HTML file locally:
 
 ```bash
-python pdf_generator.py
+start frontend/dashboard.html   # Windows
+open frontend/dashboard.html    # macOS
+xdg-open frontend/dashboard.html  # Linux
 ```
 
-Creates: `codepulse_report_YYYY.pdf`
+## PDF Reports
 
-### Via REST API
+### Command line
 
 ```bash
-curl http://localhost:5000/api/report/pdf > report.pdf
+python backend/pdf_generator.py
 ```
 
-### PDF Report Contents
+Creates `codepulse_report_YYYY.pdf` in the data directory.
 
-- 📊 7-day activity chart
-- 💬 Language distribution
-- 📁 Top projects breakdown
-- 📈 Summary statistics
-- 📅 Daily metrics
-- 🎯 Key insights
+### REST API
 
-### Export Options
-
-**To file:**
 ```bash
-python pdf_generator.py
+curl http://localhost:5000/api/report/pdf -o report.pdf
 ```
 
-**To specific path:**
+### Report contents
+
+- 7-day activity chart
+- Language distribution
+- Top projects
+- Summary statistics and daily metrics
+
+### Custom export
+
 ```python
 from pdf_generator import generate_report
 generate_report(output_path='my_reports/report_dec_28.pdf')
 ```
 
-**With custom date range:**
 ```python
 from datetime import datetime, timedelta
 from pdf_generator import generate_report
@@ -373,207 +329,108 @@ start = datetime.now() - timedelta(days=30)
 generate_report(start_date=start, days=30)
 ```
 
-### API Endpoint
+## Deployment
 
-**GET `/api/report/pdf`**
+### Local network
 
-Returns PDF file directly, downloads to your device.
-
-```bash
-curl -o activity_report.pdf http://localhost:5000/api/report/pdf
-```
-
-Response:
-- Content-Type: `application/pdf`
-- File: Professional PDF with charts and data
-
-### Use Cases
-
-- 📋 Weekly/monthly reports for portfolio
-- 💼 Share progress with team/manager
-- 📊 Analyze coding patterns
-- 🎯 Track productivity goals
-- 📑 Archive activity history
-
-## 🌐 Deployment
-
-### Local Network Access
-
-Modify `api_server.py` to listen on all interfaces:
+In `api_server.py`, bind to all interfaces for LAN access:
 
 ```python
-# In api_server.py, bottom of file
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)  # Listen on all IPs
+    app.run(debug=True, host='0.0.0.0', port=5000)
 ```
 
-Then access from another machine: `http://<your-computer-ip>:5000`
+Access from another machine: `http://<host-ip>:5000`.
 
-### Render.com Cloud Deployment
+### Render.com
 
-Deploy to Render.com free tier in 5 minutes:
+1. Create a Web Service at https://render.com and connect the repository.
+2. Use Python 3, branch `main`, build command `pip install -r requirements.txt`, and the Procfile start command.
+3. Deploy and open the assigned URL (for example `https://codepulse-ss.onrender.com`).
 
-#### Step 1: Connect Repository
-1. Go to https://render.com
-2. Sign up with GitHub
-3. Create "New Web Service"
-4. Select `itsowanga/Codepulse` repository
-
-#### Step 2: Configure Service
-
-| Setting | Value |
-|---------|-------|
-| Name | codepulse-api |
-| Environment | Python 3 |
-| Region | US East (or closest) |
-| Branch | main |
-| Build Command | `pip install -r requirements.txt` |
-| Start Command | Leave blank (uses Procfile) |
-| Plan | Free |
-
-#### Step 3: Deploy
-- Click "Create Web Service"
-- Wait 2-3 minutes for build
-- Service goes live automatically
-
-#### Step 4: Access Dashboard
-Visit your assigned URL:
-```
-https://codepulse-ss.onrender.com
-```
-
-(Render assigns a unique URL)
-
-#### Test on Phone
-1. Open phone browser
-2. Visit Render URL
-3. See responsive dashboard
-4. Charts update live
-
-### Production Deployment
-
-Use a production WSGI server:
+### Production WSGI
 
 ```bash
 pip install gunicorn
 gunicorn -w 4 -b 0.0.0.0:5000 api_server:app
 ```
 
-Or with Render.com Pro plan for persistent storage and custom domain.
+## Database
 
-## 💾 Database
-
-The app uses SQLite with a simple schema:
+SQLite schema:
 
 ```sql
 CREATE TABLE sessions(
-    timestamp TEXT,      -- Unix timestamp
-    file TEXT,           -- File path worked on
-    language TEXT,       -- Programming language
-    duration_sec FLOAT   -- Session duration in seconds
-)
+    timestamp TEXT,
+    file TEXT,
+    language TEXT,
+    duration_sec FLOAT
+);
 ```
 
-All timestamps are Unix epoch (seconds since 1970-01-01).
+Timestamps are stored as Unix epoch seconds.
 
-## 🔧 Advanced: Custom Refresh Rate
+## Custom refresh interval
 
-To change the dashboard update interval (default: 30 seconds), edit `api_server.py`:
+The embedded dashboard calls `setInterval(fetchAndUpdateDashboard, 30000)` (30 seconds). Change the interval in milliseconds in `api_server.py` as needed (for example `60000` for one minute).
 
-```javascript
-// Find this line (around line 600)
-setInterval(fetchAndUpdateDashboard, 30000);
-
-// Change 30000 to desired milliseconds
-// 10000 = 10 seconds, 60000 = 1 minute, etc.
-```
-
-## 📝 API Integration Example
-
-Create your own dashboard by fetching the API:
+## API integration example
 
 ```html
 <div id="stats"></div>
-
 <script>
 fetch('http://localhost:5000/api/stats')
   .then(res => res.json())
   .then(data => {
-    document.getElementById('stats').innerText = 
-      `Total Focus: ${data.summary.total_minutes} minutes`;
+    document.getElementById('stats').innerText =
+      `Total focus: ${data.summary.total_minutes} minutes`;
   });
 </script>
 ```
 
-## 🎯 Common Use Cases
+## Configuration
 
-### Track Daily Coding Time
-Monitor your productivity trends across the week.
+**Python version:** 3.7 or higher (`python --version`).
 
-### Identify Most-Used Languages
-See which languages you spend the most time on.
+**Virtual environment (recommended):**
 
-### Analyze Project Focus
-Find out which projects get the most attention.
-
-### Export Data
-Fetch API data and export to CSV or JSON for analysis.
-
-## ⚙️ Configuration
-
-### Python Version
-Requires Python 3.7 or higher. Check with:
-```bash
-python --version
-```
-
-### Virtual Environment (Recommended)
 ```bash
 python -m venv .venv
-.venv\Scripts\activate  # Windows
-source .venv/bin/activate  # Linux/Mac
+.venv\Scripts\activate          # Windows
+source .venv/bin/activate       # macOS / Linux
 pip install -r requirements.txt
 ```
 
-### Flask Debug Mode
-Edit `api_server.py` last line to disable debug in production:
-```python
-app.run(debug=False, host='localhost', port=5000)  # Production
-```
+**Production:** set `debug=False` in `api_server.py` when not developing locally.
 
-## 📄 Files
+## Key files
 
-- **api_server.py** - Flask REST API with integrated live dashboard
-- **pdf_generator.py** - PDF report generator with charts
-- **generate_dashboard.py** - Legacy static dashboard generator
-- **init_sample_data.py** - Generates 8 days of sample activity
-- **requirements.txt** - Python package dependencies
-- **Procfile** - Render.com deployment configuration
-- **render.yaml** - Render service configuration
-- **main.cpp** - C++ activity monitor
-- **Makefile** - Build configuration
-- **sqlite3.c/h** - SQLite3 library
+| File | Purpose |
+|------|---------|
+| `backend/api_server.py` | Flask API and live dashboard |
+| `backend/pdf_generator.py` | PDF report generation |
+| `backend/generate_dashboard.py` | Static dashboard generator |
+| `backend/init_sample_data.py` | Sample activity data |
+| `requirements.txt` | Python dependencies |
+| `Procfile` / `render.yaml` | Render deployment |
+| `src/main.cpp` | C++ activity monitor |
 
-## 📜 License
+## License
 
-Open source - modify and extend as needed!
+Open source; see `LICENSE` for terms.
 
-## ❓ Support
+## Support
 
-Having issues? Try:
+1. Confirm the server is running (`python backend/api_server.py`)
+2. Verify `data/activity.db` exists
+3. Call `http://localhost:5000/api/health`
+4. Review the browser console (F12) for errors
+5. Reinstall dependencies if needed: `pip install -r requirements.txt --force-reinstall`
 
-1. **Check if server is running** - See output from `python api_server.py`
-2. **Verify database exists** - `ls activity.db`
-3. **Check API health** - Visit `http://localhost:5000/api/health`
-4. **Review browser console** - Press F12 and check for errors
-5. **Reinstall dependencies** - `pip install -r requirements.txt --force-reinstall`
-
-## 🎉 You're Ready!
-
-Your CodePulse dashboard is ready to deploy. Simply:
+## Running locally
 
 ```bash
-python api_server.py
+python backend/api_server.py
 ```
 
-Then visit `http://localhost:5000` and watch your coding activity come to life! 📊✨
+Open `http://localhost:5000` to view the dashboard.

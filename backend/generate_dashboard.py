@@ -79,10 +79,10 @@ def generate_language_chart(conn, date):
         print("No activity data found in database")
         return False
     
-    # Create figure with two subplots
+    # Two subplots: languages and 7-day focus
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
     
-    # Subplot 1: Language Distribution (Bar Chart)
+    # Language distribution (bar)
     languages = list(lang_data.keys())
     durations = list(lang_data.values())
     
@@ -102,7 +102,7 @@ def generate_language_chart(conn, date):
     for i, (lang, duration) in enumerate(zip(languages, durations_minutes)):
         ax1.text(i, duration + 1, f'{duration:.1f}m', ha='center', va='bottom', fontweight='bold')
     
-    # Subplot 2: Focus Over Time (Line Chart - Last 7 days)
+    # Focus over time (line, last 7 days)
     dates, focus_counts = get_focus_over_time(conn, days=7)
     
     ax2.plot(dates, focus_counts, marker='o', linewidth=2.5, markersize=8, color='#45B7D1', label='Total Focus Time')

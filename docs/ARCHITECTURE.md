@@ -277,11 +277,11 @@ codepulse/
 
 ## Security & Privacy
 
-✅ **100% Offline**: No internet required, data stays local
-✅ **Private**: No telemetry or external API calls
-✅ **Local Database**: Full control over your data
-✅ **Shareable**: Export database or reports at your discretion
-✅ **CORS Enabled**: Safe cross-origin requests on localhost
+- **Offline**: No internet required; data stays on the local machine
+- **Private**: No telemetry or external API calls by default
+- **Local database**: Full control over stored activity data
+- **Exportable**: Database and reports can be exported manually
+- **CORS**: Cross-origin requests enabled for local dashboard development
 
 ---
 

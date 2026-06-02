@@ -7,31 +7,31 @@ assignees: ''
 
 ---
 
-## 🐛 Describe the Bug
+## Describe the bug
 
 A clear and concise description of what the bug is.
 
-## 📋 Steps to Reproduce
+## Steps to reproduce
 
 1. Go to...
 2. Click on...
 3. See error...
 
-## 🎯 Expected Behavior
+## Expected behavior
 
 What should happen instead?
 
-## 📸 Screenshots
+## Screenshots
 
 If applicable, add screenshots to help explain your problem.
 
-## 🖥️ Environment
+## Environment
 
 - **OS**: Windows 10 / macOS / Linux
 - **Python Version**: 3.9
 - **Browser**: Chrome / Firefox / Safari
 - **CodePulse Version**: v1.0.0
 
-## 📝 Additional Context
+## Additional context
 
 Any other context about the problem?

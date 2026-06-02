@@ -1,26 +1,26 @@
-## 📋 Pull Request Description
+## Pull Request Description
 
-**Type of Change:**
-- [ ] 🐛 Bug fix
-- [ ] ✨ New feature
-- [ ] 📚 Documentation
-- [ ] 🔧 Configuration
-- [ ] ♻️  Refactoring
-- [ ] 📈 Performance improvement
+**Type of change:**
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Documentation
+- [ ] Configuration
+- [ ] Refactoring
+- [ ] Performance improvement
 
-## 📝 Description
+## Description
 
-Please include a summary of the changes and related issue. Explain the motivation and context.
+Summarize the changes and related issue. Include motivation and context.
 
-## 🔗 Related Issue
+## Related issue
 
 Fixes # (issue number)
 
-## 🧪 How Has This Been Tested?
+## Testing
 
 Describe the tests you ran and how to reproduce them.
 
-## ✅ Checklist
+## Checklist
 
 - [ ] My code follows the project's style guidelines
 - [ ] I have performed a self-review of my own code
@@ -30,10 +30,10 @@ Describe the tests you ran and how to reproduce them.
 - [ ] I have tested my changes locally
 - [ ] New and existing unit tests pass with my changes
 
-## 📸 Screenshots (if applicable)
+## Screenshots (if applicable)
 
 Add screenshots for UI changes.
 
-## 🚀 Deployment Notes
+## Deployment notes
 
-Any special deployment considerations?
+Document any special deployment considerations.
